@@ -1,0 +1,72 @@
+# Concurrency in Netsuite-reports service
+
+Olga Skripko
+26 October 2021
+
+##  Concurrency Definition
+Concurrency means multiple computations are happening at the same time.
+
+Concurrent computations can run on the same core. Parallel concurrent computations must run on different cores.
+
+.image ./../images/goroutines.png _ 700
+
+##  Synchronization and orchestration
+- Wait group
+- Atomic
+- Channel
+- Mutex, Once, Cond, etc…
+
+## Atomic and race
+.play -edit ./../main/atomic.go
+
+## Channel reading
+.code ./../chanread.go /^func read/,/^}/
+
+##  Netsuite-report
+- The company recognises the revenue based on charges
+- Iterating through transactions ordered by time (add, charge, cancel, clear)
+- Processing transactions into lines in a specific format or netsuite
+- Writing lines into csv
+- Monitoring through progress bar
+
+
+##  The goroutine scheme
+.image ./../images/diagram.png _ 900
+
+##  Iterator
+.code ./../iterator.go /START OMIT/,/END OMIT/ HLiter
+
+##  Worker pool
+.code ./../wp.go /START OMIT/,/END OMIT/
+
+## sync.WaitGroup
+.code ./../chanread.go /^func closeChan/,/^}/ HLwg
+
+##
+.code ./../chanread.go /^func AppendConsumeLineToCSVWG/,/^}/ HLwg
+
+## Channel Netsuite sync
+.code ./../chanread.go /^func readAndSync/,/^}/ HLcustomersChan
+
+## Progress bar
+.code ./../pb.go /^type ProgressBar/,/^}/ HLfinish
+.code ./../pb.go /^func NewProgressBar/,/^}/ HLfinish
+
+##
+.code ./../pb.go /START OMIT/,/END OMIT/ HLname
+
+## Select
+.play -edit ./../main/select.go
+
+## To read
+.link https://web.mit.edu/6.005/www/fa14/classes/17-concurrency/ MIT lesson
+
+.link https://golang.org/ref/mem Golang memory model
+
+.link https://www.velotio.com/engineering-blog/understanding-golang-channels Channels
+
+.link http://tleyden.github.io/blog/2014/10/30/goroutines-vs-threads/ Goroutines vs Threads
+
+.link https://github.com/lotusirous/go-concurrency-patterns Go Concurrency Patterns
+
+.link https://github.com/Propertyfinder/netsuite-reports Netsuite-report repo
